@@ -1,7 +1,6 @@
 package com.young.image;
 
 import com.young.image.utils.ExportExcelUtils;
-import com.young.image.utils.GoogleShortUtils;
 import com.young.image.utils.ReadExcelUtil;
 import org.apache.commons.collections.map.HashedMap;
 
@@ -14,17 +13,16 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Created by yaobin on 2017/10/18.
+ * Created by yaobin on 2017/10/20.
  */
-public class ShortUrlMaker {
+public class IpFilter {
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args){
         try {
 
-            List<List<String>> excels = ReadExcelUtil.readXlsx("f:/url.xlsx");
+            List<List<String>> excels = ReadExcelUtil.readXlsx("f:/ip_list.xlsx");
             Pattern pattern = Pattern
-                    .compile("^([hH][tT]{2}[pP]://)(.)+$");
+                    .compile("([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}");
 
             List<Map<String, Object>> list = new ArrayList<>();
 
@@ -33,28 +31,26 @@ public class ShortUrlMaker {
 
                 for(String cell : sheet){
                     if(pattern.matcher(cell).matches()){
-                        String shortUrl = GoogleShortUtils.convert(cell);
                         Map<String, Object> map = new HashedMap();
-                        map.put("offerUrl", cell);
-                        map.put("shortUrl", shortUrl);
+                        String[] cells = cell.split("\\.");
+                        map.put("ip", cells[0] + "." + cells[1]);
                         list.add(map);
-                        System.out.println("短链生成进度："+ ++index);
+                        System.out.println("ip生成进度："+ ++index);
                     }
                 }
             }
 
             List<Object[]> dataList = ExportExcelUtils.getObjects(list);
-            ExportExcelUtils exporter = new ExportExcelUtils("shortUrl",
-                    new String[]{"短链", "offerUrl", "shortUrl"}, dataList);
+            ExportExcelUtils exporter = new ExportExcelUtils("ip",
+                    new String[]{"ip", "ip", "shortUrl"}, dataList);
 
-            File file = new File("f:/result.xls");
+            File file = new File("f:/ip2.xls");
             OutputStream out = new FileOutputStream(file);
             exporter.export(out);
 
         } catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
 }

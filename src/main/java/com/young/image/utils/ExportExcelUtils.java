@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ExportExcelUtils {
 
@@ -242,6 +244,29 @@ public class ExportExcelUtils {
 
         return style;
 
+    }
+
+    public static List<Object[]> getObjects(List<Map<String, Object>> list) {
+        List<Object[]> dataList = new ArrayList<Object[]>();
+        Object[] objects0 = new Object[list.get(0).size()+1];
+        dataList.add(objects0);
+        Map<String, Object> map2 = list.get(0);
+        Set<String> keySet = map2.keySet();
+        int m = 1;
+        for (String key : keySet) {
+            dataList.get(0)[m++] = key;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            Object[] objects = new Object[list.get(i).size()+1];
+            dataList.add(objects);
+            int j = 1;
+            Map<String, Object> map3 = list.get(i);
+            Set<String> keySet1 = map3.keySet();
+            for (String key : keySet1) {
+                dataList.get(i+1)[j++] = map3.get(key);
+            }
+        }
+        return dataList;
     }
 
 }
